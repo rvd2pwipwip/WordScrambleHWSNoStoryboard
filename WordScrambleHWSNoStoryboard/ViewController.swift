@@ -12,11 +12,30 @@ import UIKit
 class ViewController: UITableViewController {
     
     // 1. define an array containing the data to display in tableView
-    var characters = ["Dude", "Dudette", "Ganondorf", "Midna"]
+    var allWords = [String]()
+    var usedWords = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Word")
+        
+        if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
+            if let startWords = try? String(contentsOf: startWordsURL) {
+                allWords = startWords.components(separatedBy: "\n")
+            }
+        }
+
+        if allWords.isEmpty {
+            allWords = ["silkworm"]
+        }
+        
+        startGame()
+    }
+    
+    func startGame() {
+        title = allWords.randomElement()
+        usedWords.removeAll(keepingCapacity: true)
+        tableView.reloadData()
     }
 
 }
@@ -26,14 +45,14 @@ class ViewController: UITableViewController {
 extension ViewController {
     // Return the number of rows for the table; called once when tableView loads
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return characters.count // one row for each item in characters array
+        return usedWords.count // one row for each item in characters array
     }
     // Provide a cell object for each row; called for each row of tableview
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Fetch a cell of the appropriate type (identifier), reuse or create if no reusable cells ready
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Word", for: indexPath)
         // Configure the cell’s contents.
-        cell.textLabel?.text = characters[indexPath.row] // also reassign cell content when cells are reused
+        cell.textLabel?.text = usedWords[indexPath.row] // also reassign cell content when cells are reused
 
         return cell
     }
