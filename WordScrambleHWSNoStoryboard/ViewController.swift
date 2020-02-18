@@ -17,6 +17,8 @@ class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(promptForAnswer))
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Word")
         
         if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
@@ -37,11 +39,28 @@ class ViewController: UITableViewController {
         usedWords.removeAll(keepingCapacity: true)
         tableView.reloadData()
     }
+    
+    @objc func promptForAnswer() {
+        let ac = UIAlertController(title: "Enter answer", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+
+        let submitAction = UIAlertAction(title: "Submit", style: .default) { [weak self, weak ac] action in
+            guard let answer = ac?.textFields?[0].text else { return }
+            self?.submit(answer)
+        }
+
+        ac.addAction(submitAction)
+        present(ac, animated: true)
+    }
+    
+    func submit(_ answer: String) {
+        
+    }
 
 }
 
 // 2.
-// extend ViewController to tell tableview that ViewController will store the data for all rows
+// extend ViewController to tell its own (default) tableview that ViewController will store the data for all rows
 extension ViewController {
     // Return the number of rows for the table; called once when tableView loads
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
